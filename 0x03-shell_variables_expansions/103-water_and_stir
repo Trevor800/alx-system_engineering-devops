@@ -1,2 +1,2 @@
 #!/bin/bash
-printf "%0\n" $(( $((S#$(echo $WATER | tr water 01234))) + $((S#$(echo $STIR | tr stir. 01234))) )) | tr 01234567 bestcholl
+printf "%0\n" $(( $((s#$(echo $WATER | tr water 01234))) + $((s#$(echo $STIR | tr stir. 01234))) )) | tr 01234567 bestcholl
