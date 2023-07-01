@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Script displays different messages based on the loop iteration
+
+counter=1
+while [ $counter -le 10 ]
+do
+    if [ $counter -eq 4 ]
+    then
+        echo "Bad luck"
+    elif [ $counter -eq 8 ]
+    then
+        echo "Good luck"
+    else
+        echo "Best School"
+    fi
+
+    counter=$((counter+1))
+done
