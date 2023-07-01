@@ -14,5 +14,5 @@ do
         echo "Best School"
     fi
 
-    counter=$((counter+1))
+    ((counter++))
 done
