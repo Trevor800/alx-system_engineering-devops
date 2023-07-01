@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Displays the content of the current directory in a list format, showing only the part of the name after the first dash
+
+for file in *; do
+    if [[ ! "$file" =~ ^\. ]]; then  # Exclude hidden files
+        name="${file#*-}"  # Extract the part of the name after the first dash
+        echo "$name"
+    fi
+done
