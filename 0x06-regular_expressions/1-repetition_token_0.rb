@@ -1,2 +1,8 @@
 #!/usr/bin/env ruby
-puts ARGV[0].scan(/Scho{2}l/).join
+
+# Get the argument passed to the script
+input = ARGV[0]
+
+# Apply the regular expression and print the matching result
+matches = input.scan(/127\.0\.0\.\d/)
+puts matches.join
