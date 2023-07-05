@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 
-# Get the argument passed to the script
-input = ARGV[0]
-
-# Apply the regular expression and print the matching result
-matches = input.scan(/127\.0\.0\.\d/)
+regex = /hbt{2,5}n/
+matches = ARGV[0].scan(regex)
 puts matches.join
