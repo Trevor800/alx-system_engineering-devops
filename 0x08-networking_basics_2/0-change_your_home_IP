@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# changes the following domain resolve ips
+#   localhost from 127.0.0.1 to 127.0.0.2
+#   facebook.com from 157.240.11.35 to 8.8.8.8
+
+sudo sed -i 's/127\.0\.0\.1/127\.0\.0\.2/g' /etc/hosts
+sudo sed -i 's/157\.240\.11\.35/8\.8\.8\.8/g' /etc/hosts
