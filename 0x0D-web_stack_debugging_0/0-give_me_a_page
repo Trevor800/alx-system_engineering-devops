@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Start Apache so as to return a
+# page conatining Hello School
+service apache2 start
