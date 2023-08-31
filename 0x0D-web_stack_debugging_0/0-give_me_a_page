@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-# Start Apache so as to return a
-# page conatining Hello School
+# run apache on designated container
+
+echo "ServerName localhost" >> /etc/apache2.conf
 service apache2 start
