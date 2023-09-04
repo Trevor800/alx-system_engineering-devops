@@ -1,30 +1,34 @@
 #!/usr/bin/env bash
-
-# Update the system and install Nginx
-sudo apt-get update
+# configure web-02 to be identical to web-01
+# The name of the custom HTTP header must be X-Served-By
+# The value of the custom HTTP header must be the hostname of the server Nginx is running on
+#sudo sed -i 's/server_name _;.*/server_name _;\n\tadd_header X-Served-By \$hostname;/' /etc/nginx/sites-enabled/default 
+sudo apt-get -y update
 sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
+sudo mkdir -p /var/www/html /var/www/error
+sudo chmod -R 755 /var/www
+echo 'Hello World!' > /var/www/html/index.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+server_config=\
+"server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+	server_name _;
+	add_header X-Served-By \$hostname;
+	location / {
+		try_files \$uri \$uri/ =404;
+	}
+	if (\$request_filename ~ redirect_me){
+		rewrite ^ https://youtube.com permanent;
+	}
+	error_page 404 /404.html;
+	location = /404.html {
+		internal;
+	}
+}"
 
-# Get the current server's hostname
-server_hostname=$(hostname)
-
-# Create an Nginx configuration file to include the custom header
-echo "server {
-    listen 80;
-    server_name _;
-
-    location / {
-        add_header X-Served-By $server_hostname;
-        root /var/www/html;
-        index index.html;
-    }
-}" | sudo tee /etc/nginx/sites-available/custom-header
-
-# Create a symbolic link to enable the configuration
-sudo ln -s /etc/nginx/sites-available/custom-header /etc/nginx/sites-enabled/
-
-# Remove the default Nginx default site if needed (optional)
-# sudo rm /etc/nginx/sites-enabled/default
-
-# Reload Nginx to apply the configuration
-sudo systemctl reload nginx
-
+echo "$server_config" > /etc/nginx/sites-enabled/default
+sudo service nginx restart
