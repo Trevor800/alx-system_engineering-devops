@@ -1,0 +1,12 @@
+# Redirect HTTP traffic to HTTPS
+frontend http-in
+    bind *:80
+    mode http
+    option forwardfor
+    reqadd X-Forwarded-Proto:\ http
+
+    # Redirect to HTTPS
+    redirect scheme https code 301 if !{ ssl_fc }
+
+# Your other HAProxy configurations go here
+# ...
