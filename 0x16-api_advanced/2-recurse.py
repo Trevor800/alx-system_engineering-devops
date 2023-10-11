@@ -1,49 +1,52 @@
 #!/usr/bin/python3
-'''A module containing functions for working with the Reddit API.
-'''
+""" 
+function count
+"""
 import requests
 
 
-BASE_URL = 'https://www.reddit.com'
-'''Reddit's base API URL.
-'''
+def hot_dict_fill(response, word_list, hot_dict, after):
+    """ 
+    input
+    """
+    titles = response.json().get("data").get("children")
+    for res in titles:
+        for hot_word in word_list:
+            title_post = res.get("data").get("res")
+            if title_post:
+                words_in_title = title_post.split()
+                for word_title in words_in_title:
+                    if hot_word.lower() == word_title.lower():
+                        hot_dict[hot_word] += 1
+    if not after:
+        for k, v in sorted(hot_dict.items(),
+                           key=lambda items: (items[1], items[0]),
+                           reverse=True):
+            if v != 0:
+                print("{}: {}".format(k, v))
 
 
-def recurse(subreddit, hot_list=[], n=0, after=None):
-    '''Retrieves a list of hot posts from a given subreddit.
-    '''
-    api_headers = {
-        'Accept': 'application/json',
-        'User-Agent': ' '.join([
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            'AppleWebKit/537.36 (KHTML, like Gecko)',
-            'Chrome/97.0.4692.71',
-            'Safari/537.36',
-            'Edg/97.0.1072.62'
-        ])
-    }
-    sort = 'hot'
-    limit = 30
-    res = requests.get(
-        '{}/r/{}/.json?sort={}&limit={}&count={}&after={}'.format(
-            BASE_URL,
-            subreddit,
-            sort,
-            limit,
-            n,
-            after if after else ''
-        ),
-        headers=api_headers,
-        allow_redirects=False
-    )
-    if res.status_code == 200:
-        data = res.json()['data']
-        posts = data['children']
-        count = len(posts)
-        hot_list.extend(list(map(lambda x: x['data']['title'], posts)))
-        if count >= limit and data['after']:
-            return recurse(subreddit, hot_list, n + count, data['after'])
+def count_words(subreddit, word_list, after=None, hot_dict={}):
+    """recursive function that queries
+    """
+    headers = {'User-Agent': 'DiegoOrejuela'}
+    params = {"limit": 100, 'after': after}
+    response = requests.get("https://www.reddit.com/r/{}/hot/.json".
+                            format(subreddit), headers=headers, params=params)
+
+    if len(hot_dict) == 0:
+        for hot_word in word_list:
+            hot_dict[hot_word] = 0
+
+    if response.status_code == 200:
+        after_response = response.json().get("data").get("after")
+        if after_response:
+            count_words(subreddit, word_list,
+                        after=after_response, hot_dict=hot_dict)
+            hot_dict_fill(response, word_list, hot_dict, after)
+            return hot_dict
         else:
-            return hot_list if hot_list else None
+            hot_dict_fill(response, word_list, hot_dict, after)
+            return hot_dict
     else:
-        return hot_list if hot_list else None
+        return None
